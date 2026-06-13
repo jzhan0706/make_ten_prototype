@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>森林點心舖 — 數學小遊戲</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#FFF1DF; --bg2:#FCE3C4; --card:#FFFCF7;
+    --cookie:#8A5638; --cookie-soft:#B98A63;
+    --batch:#2FA98C; --batch-dk:#1F7A63;
+    --berry:#F2913D; --berry-dk:#C96E1F;
+    --cell:#FBEFDD; --cell-line:#E4C79C;
+    --gold:#E8B34A; --gold-dk:#B5852A;
+    --ok:#3C9A5F; --soft:#7A6A57;
+    --shadow:0 10px 30px rgba(138,86,56,.12);
+    --r:22px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    background:radial-gradient(120% 120% at 50% 0%,var(--bg1),var(--bg2));
+    min-height:100vh; color:var(--cookie);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:18px 14px 40px;
+  }
+  .wrap{width:100%; max-width:560px;}
+  header{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;}
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand h1{font-family:"Fredoka",sans-serif;font-weight:600;font-size:20px;margin:0;line-height:1;}
+  .brand p{margin:2px 0 0;font-size:12px;color:var(--soft);}
+  .coins{
+    font-family:"Fredoka",sans-serif;font-weight:600;font-size:18px;color:var(--gold-dk);
+    background:#FFF6E2;border:2px solid #F4DCA6;border-radius:999px;
+    padding:7px 14px;display:flex;align-items:center;gap:6px;box-shadow:var(--shadow);
+  }
+  .coins .dot{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FCE08A,var(--gold));border:1.5px solid var(--gold-dk);}
+
+  /* ---- shop manager pet ---- */
+  .pet{width:60px;height:60px;position:relative;transform-origin:center bottom;animation:petBob 3s ease-in-out infinite;}
+  .pet .head{position:absolute;left:6px;top:10px;width:48px;height:44px;background:var(--fur,#F7C99A);border:2px solid var(--fur-edge,#E0A86E);border-radius:48% 48% 46% 46%;}
+  .pet .ear{position:absolute;top:3px;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:15px solid var(--fur-ear,#F0BA84);}
+  .pet .ear.l{left:9px;transform:rotate(-14deg);}
+  .pet .ear.r{right:9px;transform:rotate(14deg);}
+  .pet .eye{position:absolute;top:16px;width:7px;height:9px;background:#5A3A22;border-radius:50%;transition:transform .2s;}
+  .pet .eye.l{left:12px;} .pet .eye.r{left:27px;}
+  .pet .cheek{position:absolute;top:25px;width:7px;height:5px;background:#F2A0A8;border-radius:50%;opacity:.85;}
+  .pet .cheek.l{left:6px;} .pet .cheek.r{left:33px;}
+  .pet .mouth{position:absolute;top:28px;left:20px;width:6px;height:4px;border-bottom:2px solid #5A3A22;border-radius:0 0 6px 6px;}
+  .pet.is-place{animation:petSquash .5s ease;}
+  .pet.is-ten{animation:petHop .9s ease;}
+  .pet.is-correct{animation:petCheer 1.2s ease;}
+  .pet.is-correct .eye{transform:scaleY(.28);} .pet.is-correct .cheek{opacity:1;}
+  .pet.is-wrong{animation:petWiggle .6s ease;}
+  @keyframes petBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+  @keyframes petSquash{0%{transform:scale(1,1);}40%{transform:scale(1.12,.88);}100%{transform:scale(1,1);}}
+  @keyframes petHop{0%{transform:translateY(0);}30%{transform:translateY(-13px) rotate(-5deg);}60%{transform:translateY(0) rotate(3deg);}80%{transform:translateY(-5px);}100%{transform:translateY(0) rotate(0);}}
+  @keyframes petCheer{0%{transform:translateY(0) rotate(0);}15%{transform:translateY(-16px) rotate(-8deg);}32%{transform:translateY(0);}48%{transform:translateY(-12px) rotate(8deg);}64%{transform:translateY(0);}100%{transform:translateY(0);}}
+  @keyframes petWiggle{0%,100%{transform:rotate(0);}25%{transform:rotate(-8deg);}75%{transform:rotate(8deg);}}
+  .pet .acc{position:absolute;display:none;line-height:1;pointer-events:none;}
+  .pet.has-hat .acc-hat{display:block;font-size:24px;top:-14px;left:18px;}
+  .pet.has-glasses .acc-glasses{display:block;font-size:20px;top:16px;left:13px;}
+  .pet.has-bow .acc-bow{display:block;font-size:17px;top:-3px;left:35px;}
+  .pet.has-tie .acc-tie{display:block;font-size:20px;top:42px;left:20px;}
+  .pet.has-crown .acc-crown{display:block;font-size:22px;top:-13px;left:18px;}
+  .pet.has-flower .acc-flower{display:block;font-size:17px;top:-3px;left:6px;}
+  .pet.has-shades .acc-shades{display:block;font-size:20px;top:16px;left:13px;}
+  .pet.has-balloon .acc-balloon{display:block;font-size:20px;top:-22px;left:40px;}
+  .pet .pet-face{position:absolute;inset:0;display:none;place-items:center;font-size:44px;line-height:1;}
+  .pet.sp-emoji .head,.pet.sp-emoji .ear{display:none;}
+  .pet.sp-emoji .pet-face{display:grid;}
+  .pet.has-phones .acc-phones{display:block;font-size:24px;top:-4px;left:6px;}
+  .pet.has-fly .acc-fly{display:block;font-size:18px;top:8px;left:-2px;}
+  .pet.has-x_star .acc-x_star{display:block;font-size:18px;top:-10px;left:2px;}
+  .pet.has-x_cap .acc-x_cap{display:block;font-size:22px;top:-14px;left:17px;}
+  .pet.has-x_medal .acc-x_medal{display:block;font-size:18px;top:40px;left:8px;}
+  .pet.has-x_wand .acc-x_wand{display:block;font-size:18px;top:18px;left:44px;}
+  .pet.has-x_ribbon .acc-x_ribbon{display:block;font-size:18px;top:18px;left:0px;}
+  .pet.has-x_trophy .acc-x_trophy{display:block;font-size:18px;top:40px;left:34px;}
+  .pet.has-x_gem .acc-x_gem{display:block;font-size:16px;top:24px;left:42px;}
+  .pet.has-x_puzzle .acc-x_puzzle{display:block;font-size:16px;top:6px;left:42px;}
+  .pet.has-x_purse .acc-x_purse{display:block;font-size:16px;top:26px;left:0px;}
+  .pet.has-x_lolly .acc-x_lolly{display:block;font-size:18px;top:-12px;left:30px;}
+  .pet.has-x_target .acc-x_target{display:block;font-size:16px;top:26px;left:44px;}
+  .pet.has-x_cash .acc-x_cash{display:block;font-size:16px;top:40px;left:18px;}
+
+  .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 20px;}
+
+  /* ---- level map ---- */
+  .map-intro{text-align:center;font-size:19px;font-weight:700;margin:2px 0 16px;color:var(--cookie);}
+  .zones{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .zone{background:var(--card);border:3px solid #EFD9B6;border-radius:18px;padding:16px 12px 14px;text-align:center;cursor:pointer;transition:transform .12s,box-shadow .2s;box-shadow:var(--shadow);position:relative;}
+  .zone:hover,.zone:focus-visible{transform:translateY(-3px);outline:none;box-shadow:0 14px 28px rgba(138,86,56,.18);}
+  .zone .z-icon{font-size:42px;line-height:1;}
+  .zone .z-name{font-weight:700;font-size:17px;margin-top:8px;}
+  .zone .z-sub{font-size:12px;color:var(--soft);margin-top:3px;}
+  .zone .badge{position:absolute;top:9px;left:10px;font-size:11px;background:#E6F6EC;color:var(--ok);border-radius:999px;padding:2px 9px;font-weight:700;}
+  .zone.locked{opacity:.6;cursor:default;filter:grayscale(.45);}
+  .zone.locked:hover{transform:none;box-shadow:var(--shadow);}
+  .zone .lock{position:absolute;top:8px;right:11px;font-size:15px;}
+  .zone .soon{position:absolute;top:9px;left:10px;font-size:11px;background:#F0EAE0;color:var(--soft);border-radius:999px;padding:2px 9px;font-weight:700;}
+
+  .back{background:#FFF6E9;border:2px solid #EFD3A2;border-radius:999px;padding:8px 16px;font-family:"Fredoka",sans-serif;font-weight:600;font-size:15px;color:var(--cookie);cursor:pointer;margin-bottom:12px;transition:transform .12s;}
+  .back:hover,.back:focus-visible{transform:translateX(-3px);outline:none;}
+
+  /* ---- shared game bits ---- */
+  .customer{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+  .customer .face{font-size:40px;filter:drop-shadow(0 3px 4px rgba(138,86,56,.18));}
+  .bubble{
+    background:#FFF6E9;border:2px solid #F1DBB6;border-radius:16px 16px 16px 4px;
+    padding:12px 16px;font-size:21px;font-weight:700;color:var(--cookie);line-height:1.4;flex:1;
+  }
+  .equation{
+    text-align:center;font-family:"Fredoka",sans-serif;font-weight:700;
+    font-size:46px;letter-spacing:2px;margin:14px 0 6px;color:var(--cookie);min-height:50px;
+  }
+  .equation .q{color:var(--berry-dk);}
+
+  /* ten-frame (z4) */
+  .frame-wrap{display:flex;justify-content:center;margin:10px 0 4px;}
+  .frame{
+    display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,1fr);
+    gap:8px;background:#F3E3C8;padding:10px;border-radius:18px;
+    border:3px solid var(--cell-line);width:100%;max-width:360px;
+  }
+  .cell{
+    aspect-ratio:1/1;background:var(--cell);border-radius:13px;
+    display:grid;place-items:center;border:2px dashed transparent;transition:border-color .2s,background .2s;
+  }
+  .cell.empty{border-color:var(--cell-line);}
+  .cell.added{border:2px dashed var(--berry);}
+  .cell.hint{animation:pulse 1s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{border-color:var(--cell-line);}50%{border-color:var(--berry);background:#FFEAD3;}}
+  .frame.sealed .token{pointer-events:none;}
+  .frame.open{border-color:var(--berry);box-shadow:0 0 0 3px #FFE2C5;}
+  .frame.open .token{cursor:pointer;transition:transform .15s;}
+  .frame.open .token:hover,.frame.open .token:focus-visible{transform:scale(1.12);outline:none;}
+  .frame.open .token:focus-visible{box-shadow:0 0 0 4px #FFD9A0;}
+  .token.taken{animation:takeAway .35s ease forwards;}
+  .token{width:100%;height:100%;display:grid;place-items:center;font-size:32px;line-height:1;border:none;background:transparent;filter:drop-shadow(0 2px 3px rgba(138,86,56,.22));}
+  .place-in{animation:drop .35s cubic-bezier(.2,.8,.3,1.2);}
+  @keyframes drop{0%{transform:translateY(-26px) scale(.7);opacity:0;}100%{transform:translateY(0) scale(1);opacity:1;}}
+  .tray-label{text-align:center;font-size:17px;font-weight:700;color:var(--soft);margin:14px 0 8px;}
+  .tray{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;min-height:64px;align-items:center;}
+  .tray .token{width:56px;height:56px;cursor:pointer;border:none;padding:0;background:transparent;font-size:44px;border-radius:14px;transition:transform .15s;}
+  .tray .token:hover,.tray .token:focus-visible{transform:scale(1.12) translateY(-3px);outline:none;}
+  .tray .token:focus-visible{box-shadow:0 0 0 4px #FFD9A0;}
+  .basket{background:#F3E3C8;border:3px solid var(--cell-line);border-radius:24px;padding:14px;min-height:88px;width:100%;max-width:360px;display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:10px;}
+  .basket .token{width:48px;height:48px;font-size:38px;cursor:pointer;border-radius:12px;transition:transform .15s;}
+  .basket .token:hover,.basket .token:focus-visible{transform:scale(1.1);outline:none;}
+  .basket .token:focus-visible{box-shadow:0 0 0 4px #FFD9A0;}
+  .tree{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,1fr);gap:8px;width:100%;max-width:360px;margin:0 auto;}
+  .tree .slot{aspect-ratio:1/1;display:grid;place-items:center;}
+  .tree .token{width:84%;height:84%;cursor:pointer;border-radius:12px;font-size:38px;transition:transform .15s;}
+  .tree .token:hover,.tree .token:focus-visible{transform:scale(1.12);outline:none;}
+  .tree .token:focus-visible{box-shadow:0 0 0 4px #FFD9A0;}
+
+  /* combine plates (z2) */
+  .combine-stage{display:flex;align-items:center;justify-content:center;gap:12px;margin:10px 0;min-height:120px;flex-wrap:wrap;}
+  .plate{background:#F3E3C8;border:3px solid var(--cell-line);border-radius:24px;padding:12px;min-width:104px;min-height:104px;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:8px;transition:transform .4s,opacity .4s;}
+  .plate.big{min-width:200px;max-width:320px;}
+  .ck{font-size:32px;line-height:1;filter:drop-shadow(0 2px 3px rgba(138,86,56,.22));}
+  .ck.pop{animation:drop .32s cubic-bezier(.2,.8,.3,1.2);}
+  .ck.taken{animation:takeAway .35s ease forwards;}
+  @keyframes takeAway{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-44px) scale(.4);opacity:0;}}
+  .plus-sign{font-family:"Fredoka",sans-serif;font-size:36px;color:var(--cookie-soft);font-weight:700;}
+  .combine-stage.merging .plate.l{transform:translateX(46px);opacity:0;}
+  .combine-stage.merging .plate.r{transform:translateX(-46px);opacity:0;}
+  .combine-stage.merging .plus-sign{opacity:0;}
+  .pv-stage{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin:10px 0;min-height:72px;}
+  .tenblock{width:28px;height:58px;background:var(--batch);border:2px solid var(--batch-dk);border-radius:8px;color:#fff;display:grid;place-items:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:14px;}
+  .oneunit{width:20px;height:20px;border-radius:50%;background:var(--berry);border:2px solid var(--berry-dk);}
+  .coin-row{display:flex;justify-content:center;gap:14px;margin:8px 0;}
+  .coin-chip{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:16px;cursor:pointer;border:2px solid;transition:transform .12s;}
+  .coin-chip:hover,.coin-chip:focus-visible{transform:translateY(-3px);outline:none;}
+  .coin-1{background:#E7B98C;border-color:#C8853F;color:#6e3f15;}
+  .coin-5{background:#D7DBE2;border-color:#A9AEB8;color:#444a52;}
+  .coin-10{background:#F6D77A;border-color:#C99A2E;color:#6e5210;}
+  .basket .coin-chip{width:44px;height:44px;}
+
+  .answers{display:flex;justify-content:center;gap:12px;margin-top:6px;flex-wrap:wrap;}
+  .ans{font-family:"Fredoka",sans-serif;font-weight:600;font-size:30px;color:var(--cookie);background:#FFF6E9;border:3px solid #EFD3A2;border-radius:18px;width:84px;height:74px;cursor:pointer;transition:transform .12s,background .2s,border-color .2s;}
+  .ans:hover,.ans:focus-visible{transform:translateY(-3px);background:#FFEFD6;outline:none;border-color:var(--gold);}
+  .ans.correct{background:#E3F6E8;border-color:var(--ok);color:var(--ok);}
+  .ans.wobble{animation:wobble .4s;}
+  @keyframes wobble{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+
+  .feedback{text-align:center;min-height:30px;margin-top:14px;font-size:17px;font-weight:700;}
+  .feedback.good{color:var(--ok);}
+  .feedback.try{color:var(--berry-dk);}
+
+  .btn{display:block;margin:14px auto 0;font-family:"Fredoka",sans-serif;font-weight:600;font-size:19px;color:#fff;border:none;padding:13px 34px;border-radius:999px;cursor:pointer;transition:transform .12s,box-shadow .2s;}
+  .btn:hover,.btn:focus-visible{transform:translateY(-2px);outline:none;}
+  .btn.green{background:linear-gradient(180deg,#46B884,var(--batch));box-shadow:0 6px 16px rgba(47,169,140,.4);}
+  .btn.orange{background:linear-gradient(180deg,#F6A858,var(--berry));box-shadow:0 6px 16px rgba(242,145,61,.4);}
+
+  .greet-link{cursor:pointer;}
+  .greet-link:hover{color:var(--gold-dk);}
+  .stars{margin-top:7px;font-size:14px;letter-spacing:1px;line-height:1;}
+  .z-count{font-size:11px;color:var(--soft);margin-top:4px;}
+  .star{color:#E7D7B9;}
+  .star.on{color:var(--gold);}
+  .name-card{text-align:center;padding:28px 22px;}
+  .name-q{font-size:22px;font-weight:700;margin:4px 0 18px;color:var(--cookie);}
+  .name-input{display:block;margin:0 auto;font-family:inherit;font-weight:700;font-size:21px;text-align:center;padding:12px 16px;border:3px solid #EFD3A2;border-radius:16px;width:100%;max-width:240px;background:#FFF;color:var(--cookie);outline:none;}
+  .name-input:focus{border-color:var(--gold);}
+
+  .shop-open{margin-top:16px;}
+  .shop-title{text-align:center;font-size:18px;font-weight:700;margin:2px 0 16px;color:var(--cookie);}
+  .shop-items{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .shop-item{background:#FFF6E9;border:2px solid #EFD9B6;border-radius:16px;padding:14px 10px;text-align:center;}
+  .shop-ic{font-size:36px;line-height:1;}
+  .shop-name{font-weight:700;font-size:15px;margin:6px 0 10px;}
+  .shop-btn{font-family:"Fredoka",sans-serif;font-weight:600;font-size:14px;color:var(--cookie);background:#FFF;border:2px solid #EFD3A2;border-radius:999px;padding:8px 14px;cursor:pointer;transition:transform .12s,background .2s;}
+  .shop-btn:hover:not(:disabled),.shop-btn:focus-visible{transform:translateY(-2px);outline:none;background:#FFEFD6;}
+  .shop-btn.buy{background:linear-gradient(180deg,#F6A858,var(--berry));color:#fff;border-color:transparent;}
+  .shop-btn.equipped{background:#E3F6E8;border-color:var(--ok);color:var(--ok);}
+  .shop-btn:disabled{opacity:.5;cursor:default;}
+  .shop-sub{font-weight:700;font-size:15px;color:var(--soft);margin:18px 0 10px;}
+  .shop-sub.first{margin-top:2px;}
+  .bg-sw{width:100%;height:34px;border-radius:10px;margin-bottom:8px;border:2px solid rgba(0,0,0,.06);}
+  .av-sw{width:46px;height:46px;border-radius:50%;margin:0 auto 8px;border:2px solid rgba(0,0,0,.08);}
+  .av-sw.av-emoji{display:grid;place-items:center;font-size:30px;background:#FFF;}
+  .ltag{font-size:10px;background:#F4D9A6;color:var(--gold-dk);border-radius:6px;padding:1px 5px;margin-left:4px;}
+  .avatar-wrap{display:flex;justify-content:center;align-items:flex-end;height:130px;margin:2px 0 4px;}
+  .avatar-scale{transform:scale(2);transform-origin:center bottom;}
+  .zone.unlock-ready{border-color:var(--berry);cursor:pointer;}
+  .zone.unlock-ready .z-count{color:var(--berry-dk);font-weight:700;}
+  @keyframes introIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+  @keyframes emojiBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+  .intro-card{text-align:center;padding:28px 22px;animation:introIn .5s ease backwards;}
+  .intro-emoji{font-size:40px;letter-spacing:4px;animation:emojiBob 2s ease-in-out infinite;}
+  .intro-h{font-size:22px;font-weight:700;margin:10px 0 8px;color:var(--cookie);animation:introIn .5s ease .08s backwards;}
+  .intro-p{font-size:16px;color:var(--cookie);margin:0 0 14px;line-height:1.5;animation:introIn .5s ease .16s backwards;}
+  .intro-rules{list-style:none;padding:0;margin:0 auto 18px;text-align:left;display:inline-block;}
+  .intro-rules li{font-size:15px;color:var(--cookie);margin:9px 0;line-height:1.5;animation:introIn .5s ease backwards;}
+  .intro-rules li:nth-child(1){animation-delay:.24s;}
+  .intro-rules li:nth-child(2){animation-delay:.34s;}
+  .intro-rules li:nth-child(3){animation-delay:.44s;}
+  .intro-rules li:nth-child(4){animation-delay:.54s;}
+  #introGo{animation:introIn .5s ease .7s backwards;}
+
+  .hidden{display:none !important;}
+
+  .hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50;}
+  .heart{position:absolute;top:-44px;will-change:transform,opacity;animation:fall linear forwards;}
+  .confetti{position:absolute;top:-24px;border-radius:2px;will-change:transform,opacity;animation:fall linear forwards;}
+  @keyframes fall{0%{transform:translateY(-44px) rotate(0deg);opacity:0;}12%{opacity:1;}100%{transform:translateY(108vh) rotate(var(--rot));opacity:0;}}
+
+  .mute{background:none;border:none;cursor:pointer;font-size:20px;color:var(--soft);padding:6px;border-radius:10px;}
+  .mute:focus-visible{outline:3px solid #FFD9A0;}
+
+  @media (max-width:430px){
+    .equation{font-size:38px;} .ans{width:74px;height:66px;font-size:26px;}
+    .tray .token{width:44px;height:44px;font-size:36px;}
+    .zones{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="hearts" id="hearts" aria-hidden="true"></div>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="pet" id="pet" aria-hidden="true">
+        <div class="ear l"></div><div class="ear r"></div>
+        <div class="head">
+          <div class="eye l"></div><div class="eye r"></div>
+          <div class="cheek l"></div><div class="cheek r"></div>
+          <div class="mouth"></div>
+        </div>
+        <span class="acc acc-hat">🎩</span><span class="acc acc-glasses">👓</span><span class="acc acc-bow">🎀</span><span class="acc acc-tie">🧣</span><span class="acc acc-crown">👑</span><span class="acc acc-flower">🌸</span><span class="acc acc-shades">🕶️</span><span class="acc acc-balloon">🎈</span>
+      </div>
+      <div><h1>森林點心舖</h1><p id="greet" class="greet-link" title="點一下換暱稱">店長小麻吉的數學小舖</p></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <button class="mute" id="musicBtn" aria-label="開關背景音樂">🎵</button>
+      <button class="mute" id="muteBtn" aria-label="開關音效">🔊</button>
+      <div class="coins"><span class="dot"></span><span id="coins">0</span></div>
+    </div>
+  </header>
+
+  <!-- 開場介紹 -->
+  <div id="screen-intro" class="hidden">
+    <div class="card intro-card">
+      <div class="intro-emoji">🍪🐱🎀</div>
+      <h2 class="intro-h">歡迎來到森林點心舖！</h2>
+      <p class="intro-p">你是店長小麻吉的小幫手，幫忙服務上門的動物客人。</p>
+      <ul class="intro-rules">
+        <li>🍪 用點心算數學，答對就賺<b>金幣</b>和<b>星星</b></li>
+        <li>🎀 金幣可以解鎖新關卡、到小舖幫店長打扮</li>
+        <li>⭐ 每答對 5 題得 1 顆星，集滿星星有限定獎勵</li>
+        <li>💛 答錯不要緊，慢慢數、再試一次就好！</li>
+      </ul>
+      <button class="btn green" id="introGo">開始 →</button>
+    </div>
+  </div>
+
+  <!-- 暱稱輸入 -->
+  <div id="screen-name" class="hidden">
+    <div class="card name-card">
+      <p class="name-q">嗨！告訴我你的暱稱吧～</p>
+      <input id="nameInput" class="name-input" maxlength="8" placeholder="輸入暱稱" aria-label="暱稱">
+      <p style="font-size:13px;color:var(--soft);margin:12px 0 0;">（之後點一下名字就能更換）</p>
+      <button class="btn green" id="nameGo">開始玩！</button>
+    </div>
+  </div>
+
+  <!-- 關卡地圖 -->
+  <div id="screen-map" class="hidden">
+    <div class="avatar-wrap"><div class="avatar-scale">
+      <div class="pet" id="petBig" aria-hidden="true">
+        <div class="ear l"></div><div class="ear r"></div>
+        <div class="head">
+          <div class="eye l"></div><div class="eye r"></div>
+          <div class="cheek l"></div><div class="cheek r"></div>
+          <div class="mouth"></div>
+        </div>
+        <span class="acc acc-hat">🎩</span><span class="acc acc-glasses">👓</span><span class="acc acc-bow">🎀</span><span class="acc acc-tie">🧣</span><span class="acc acc-crown">👑</span><span class="acc acc-flower">🌸</span><span class="acc acc-shades">🕶️</span><span class="acc acc-balloon">🎈</span>
+      </div>
+    </div></div>
+    <p class="map-intro" id="mapIntro">選一關開始玩吧！</p>
+    <div class="zones" id="zones"></div>
+    <button class="btn orange shop-open" id="shopOpen">🎀 店長小舖（用金幣換裝）</button>
+  </div>
+
+  <!-- 店長小舖 -->
+  <div id="screen-shop" class="hidden">
+    <button class="back" id="shopBack">← 回地圖</button>
+    <div class="card">
+      <p class="shop-title">用金幣幫店長小麻吉打扮！</p>
+      <p class="shop-sub first">配件</p>
+      <div class="shop-items" id="shopItems"></div>
+      <p class="shop-sub">店長頭像</p>
+      <div class="shop-items" id="shopAvatars"></div>
+      <p class="shop-sub">店面背景</p>
+      <div class="shop-items" id="shopBgs"></div>
+    </div>
+  </div>
+
+  <!-- 遊戲畫面 -->
+  <div id="screen-game" class="hidden">
+    <button class="back" id="backBtn">← 回地圖</button>
+    <div class="card"><div id="play"></div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const faces = ["🐻","🐰","🦊","🐼","🐨","🐯"];
+  function rnd(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+  const reduced = ()=>window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* ---------- 進度儲存：瀏覽器本機儲存，失敗則用記憶體 ---------- */
+  const _mem={};
+  const store={
+    get(k){ try{ const v=localStorage.getItem('fss_'+k); return (v===null)?null:{value:v}; }catch(e){ return (k in _mem)?{value:_mem[k]}:null; } },
+    set(k,v){ try{ localStorage.setItem('fss_'+k,String(v)); }catch(e){ _mem[k]=String(v); } }
+  };
+
+  /* ---------- 音效 ---------- */
+  let actx=null, muted=false;
+  function tone(freq,dur,when=0,type="sine",gain=0.12){
+    if(muted) return;
+    try{
+      actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+      const o=actx.createOscillator(), g=actx.createGain();
+      o.type=type; o.frequency.value=freq; o.connect(g); g.connect(actx.destination);
+      const t=actx.currentTime+when;
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(gain,t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+      o.start(t); o.stop(t+dur);
+    }catch(e){}
+  }
+  const plink = ()=>tone(660,0.18,0,"triangle",0.10);
+  const tenChime = ()=>{tone(660,0.18,0);tone(880,0.3,0.12);};
+  const winSound = ()=>{
+    tone(784,0.12,0,"triangle",0.10); tone(988,0.12,0.10,"triangle",0.10);
+    tone(1175,0.12,0.20,"triangle",0.11); tone(1568,0.30,0.30,"triangle",0.12);
+    tone(2093,0.20,0.42,"sine",0.06);
+  };
+  $("muteBtn").addEventListener("click",function(){ muted=!muted; this.textContent=muted?"🔇":"🔊"; });
+
+  /* ---------- 背景音樂（程式合成、可開關） ---------- */
+  let musicOn=true, bgmInt=null, bgmIdx=0;
+  const bgmNotes=[523,659,784,659,587,523,587,392,523,659,784,880,784,659,587,523];
+  function ensureCtx(){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume(); }catch(e){} return actx; }
+  function bgmNote(f){ try{ const c=ensureCtx(); if(!c) return; const o=c.createOscillator(), g=c.createGain(); o.type='triangle'; o.frequency.value=f; o.connect(g); g.connect(c.destination); const t=c.currentTime; g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.04,t+0.05); g.gain.exponentialRampToValueAtTime(0.0001,t+0.5); o.start(t); o.stop(t+0.55);}catch(e){} }
+  function startMusic(){ if(!musicOn||bgmInt) return; ensureCtx(); bgmInt=setInterval(()=>bgmNote(bgmNotes[bgmIdx++ % bgmNotes.length]),430); }
+  function stopMusic(){ if(bgmInt){ clearInterval(bgmInt); bgmInt=null; } }
+  function saveMusic(){ try{ if(store) store.set('musicOn',musicOn?'1':'0'); }catch(e){} }
+  $("musicBtn").addEventListener("click",function(){ musicOn=!musicOn; saveMusic(); if(musicOn){ this.textContent='🎵'; startMusic(); } else { this.textContent='🔕'; stopMusic(); } });
+
+  /* ---------- 慶祝動畫 ---------- */
+  function heartRain(){
+    if(reduced()) return;
+    const box=$("hearts"), hearts=["❤️","💖","💛","💗","🧡","💕"];
+    for(let i=0;i<20;i++){
+      const h=document.createElement('div'); h.className='heart';
+      h.textContent=hearts[rnd(0,hearts.length-1)];
+      h.style.left=Math.random()*100+'vw'; h.style.fontSize=(22+Math.random()*24)+'px';
+      const dur=2+Math.random()*1.8;
+      h.style.animationDuration=dur+'s'; h.style.animationDelay=(Math.random()*0.5)+'s';
+      h.style.setProperty('--rot',(Math.random()*140-70)+'deg');
+      box.appendChild(h); setTimeout(()=>h.remove(),(dur+0.7)*1000);
+    }
+  }
+  function confetti(){
+    if(reduced()) return;
+    const box=$("hearts"), colors=["#F2913D","#2FA98C","#E8B34A","#E0567B","#5B8DEF","#9B6BD8"];
+    for(let i=0;i<30;i++){
+      const c=document.createElement('div'); c.className='confetti';
+      c.style.left=Math.random()*100+'vw'; c.style.background=colors[rnd(0,colors.length-1)];
+      c.style.width=(6+Math.random()*6)+'px'; c.style.height=(10+Math.random()*8)+'px';
+      if(Math.random()<0.4) c.style.borderRadius='50%';
+      const dur=2.2+Math.random()*1.8;
+      c.style.animationDuration=dur+'s'; c.style.animationDelay=(Math.random()*0.4)+'s';
+      c.style.setProperty('--rot',(Math.random()*720+360)+'deg');
+      box.appendChild(c); setTimeout(()=>c.remove(),(dur+0.6)*1000);
+    }
+  }
+
+  /* ---------- 店長寵物 ---------- */
+  const pet=$("pet"); let petTimer=null;
+  function petReact(kind){
+    const cls={place:'is-place',ten:'is-ten',correct:'is-correct',wrong:'is-wrong'}[kind];
+    if(!cls) return;
+    const pets=document.querySelectorAll('.pet');
+    pets.forEach(p=>{ p.classList.remove('is-place','is-ten','is-correct','is-wrong'); void p.offsetWidth; p.classList.add(cls); });
+    clearTimeout(petTimer);
+    const dur=kind==='correct'?1300:(kind==='ten'?950:650);
+    petTimer=setTimeout(()=>pets.forEach(p=>p.classList.remove(cls)),dur);
+  }
+
+  /* ---------- 金幣與店長小舖 ---------- */
+  let coins=0, owned={}, equipped={}, ownedBg={bg_default:true}, activeBg='bg_default', ownedAvatar={av_default:true}, activeAvatar='av_default', unlocked={z1:true,z2:true,z3:true,z4:true};
+  const shopGoods=[
+    {id:'hat',e:'🎩',name:'帽子',price:5},
+    {id:'glasses',e:'👓',name:'眼鏡',price:8},
+    {id:'bow',e:'🎀',name:'蝴蝶結',price:6},
+    {id:'tie',e:'🧣',name:'圍巾',price:10},
+    {id:'crown',e:'👑',name:'皇冠',price:12},
+    {id:'flower',e:'🌸',name:'花朵',price:7},
+    {id:'shades',e:'🕶️',name:'太陽眼鏡',price:9},
+    {id:'balloon',e:'🎈',name:'氣球',price:6},
+    {id:'phones',e:'🎧',name:'耳機',price:8},
+    {id:'fly',e:'🦋',name:'蝴蝶',price:7},
+    {id:'x_star',e:'🌟',name:'數感之星',exclusive:true,zone:'z1'},
+    {id:'x_cap',e:'🎓',name:'加法學士帽',exclusive:true,zone:'z2'},
+    {id:'x_medal',e:'🏅',name:'減法獎牌',exclusive:true,zone:'z3'},
+    {id:'x_wand',e:'🪄',name:'湊十魔杖',exclusive:true,zone:'z4'},
+    {id:'x_ribbon',e:'🎗️',name:'退位勳帶',exclusive:true,zone:'z5'},
+    {id:'x_trophy',e:'🏆',name:'訂單獎盃',exclusive:true,zone:'z6'},
+    {id:'x_gem',e:'💎',name:'大數寶石',exclusive:true,zone:'z7'},
+    {id:'x_puzzle',e:'🧩',name:'找數拼圖',exclusive:true,zone:'z8'},
+    {id:'x_purse',e:'👛',name:'錢包',exclusive:true,zone:'z9'},
+    {id:'x_lolly',e:'🍭',name:'棒棒糖',exclusive:true,zone:'z10'},
+    {id:'x_target',e:'🎯',name:'位值標靶',exclusive:true,zone:'z11'},
+    {id:'x_cash',e:'💵',name:'找零達人',exclusive:true,zone:'z12'},
+  ];
+  const bgGoods=[
+    {id:'bg_default',name:'原本',price:0,c1:'#FFF1DF',c2:'#FCE3C4'},
+    {id:'bg_pink',name:'草莓粉',price:8,c1:'#FFE3EE',c2:'#FBC9DC'},
+    {id:'bg_mint',name:'薄荷綠',price:8,c1:'#E2F6EC',c2:'#C2E9D5'},
+    {id:'bg_blue',name:'天空藍',price:8,c1:'#E4F0FB',c2:'#C5DDF3'},
+    {id:'bg_purple',name:'薰衣草',price:8,c1:'#EFE3FA',c2:'#D8C4F2'},
+    {id:'bg_lemon',name:'奶油黃',price:8,c1:'#FFF6D6',c2:'#FCE9A6'},
+  ];
+  const avatarGoods=[
+    {id:'av_default',name:'小麻吉',price:0,type:'cat',head:'#F7C99A',edge:'#E0A86E',ear:'#F0BA84'},
+    {id:'av_grey',name:'小灰灰',price:3,type:'cat',head:'#CDD0D6',edge:'#A9ADB6',ear:'#B8BCC4'},
+    {id:'av_pink',name:'小櫻',price:3,type:'cat',head:'#F6BFD0',edge:'#DF93AC',ear:'#EFA8C0'},
+    {id:'av_cocoa',name:'小可可',price:3,type:'cat',head:'#C99A6E',edge:'#A87C52',ear:'#B98A5E'},
+    {id:'av_snow',name:'小雪',price:3,type:'cat',head:'#F1EAE0',edge:'#D2C6B6',ear:'#E0D5C6'},
+    {id:'av_rabbit',name:'兔子',price:15,type:'emoji',emoji:'🐰'},
+    {id:'av_bear',name:'小熊',price:15,type:'emoji',emoji:'🐻'},
+    {id:'av_elephant',name:'大象',price:15,type:'emoji',emoji:'🐘'},
+    {id:'av_hedgehog',name:'刺蝟',price:15,type:'emoji',emoji:'🦔'},
+    {id:'av_wolf',name:'野狼',price:15,type:'emoji',emoji:'🐺'},
+    {id:'av_monkey',name:'猴子',price:15,type:'emoji',emoji:'🐵'},
+    {id:'av_lion',name:'獅子',price:15,type:'emoji',emoji:'🦁'},
+    {id:'av_unicorn',name:'彩虹獨角獸',price:0,type:'emoji',emoji:'🦄',limited:true,starReq:30},
+  ];
+  function updateCoins(){ $("coins").textContent=coins; }
+  function addCoin(){ coins++; updateCoins(); saveCoins(); }
+  function saveCoins(){ try{ if(store) store.set('coins',String(coins)); }catch(e){} }
+  function saveShop(){ try{ if(store) store.set('shop',JSON.stringify({owned,equipped,ownedBg,activeBg,ownedAvatar,activeAvatar})); }catch(e){} }
+  function saveUnlocked(){ try{ if(store) store.set('unlocked',JSON.stringify(unlocked)); }catch(e){} }
+  function ensureAccessories(){ document.querySelectorAll('.pet').forEach(p=>shopGoods.forEach(g=>{ if(!p.querySelector('.acc-'+g.id)){ const s=document.createElement('span'); s.className='acc acc-'+g.id; s.textContent=g.e; p.appendChild(s); } })); }
+  function applyPet(){ document.querySelectorAll('.pet').forEach(p=>shopGoods.forEach(g=>p.classList.toggle('has-'+g.id,!!equipped[g.id]))); }
+  function applyBg(){ const b=bgGoods.find(x=>x.id===activeBg)||bgGoods[0]; document.documentElement.style.setProperty('--bg1',b.c1); document.documentElement.style.setProperty('--bg2',b.c2); }
+  function applyAvatar(){
+    const a=avatarGoods.find(x=>x.id===activeAvatar)||avatarGoods[0];
+    document.querySelectorAll('.pet').forEach(p=>{
+      let f=p.querySelector('.pet-face');
+      if(!f){ f=document.createElement('div'); f.className='pet-face'; p.insertBefore(f,p.firstChild); }
+      if(a.type==='emoji'){ p.classList.add('sp-emoji'); f.textContent=a.emoji; }
+      else{ p.classList.remove('sp-emoji'); p.style.setProperty('--fur',a.head); p.style.setProperty('--fur-edge',a.edge); p.style.setProperty('--fur-ear',a.ear); }
+    });
+  }
+  function renderShop(){
+    const box=$("shopItems"); box.innerHTML="";
+    shopGoods.forEach(g=>{
+      const card=document.createElement("div"); card.className="shop-item";
+      let action;
+      if(owned[g.id]){
+        const on=!!equipped[g.id];
+        action='<button class="shop-btn '+(on?'equipped':'')+'" data-eq="'+g.id+'">'+(on?'穿戴中':'沒穿戴')+'</button>';
+      }else if(g.exclusive){
+        action='<button class="shop-btn" disabled>滿 10★ 解鎖</button>';
+      }else if(coins>=g.price){
+        action='<button class="shop-btn buy" data-buy="'+g.id+'">買（'+g.price+'🪙）</button>';
+      }else{
+        action='<button class="shop-btn" disabled>'+g.price+'🪙</button>';
+      }
+      const tag=g.exclusive?'<span class="ltag">限定</span>':'';
+      card.innerHTML='<div class="shop-ic">'+g.e+'</div><div class="shop-name">'+g.name+tag+'</div>'+action;
+      box.appendChild(card);
+    });
+    box.querySelectorAll('[data-buy]').forEach(b=>b.addEventListener('click',()=>{
+      const id=b.getAttribute('data-buy'), g=shopGoods.find(x=>x.id===id);
+      if(coins>=g.price && !owned[id]){ coins-=g.price; owned[id]=true; equipped[id]=true; updateCoins(); saveCoins(); saveShop(); applyPet(); renderShop(); winSound(); petReact('correct'); }
+    }));
+    box.querySelectorAll('[data-eq]').forEach(b=>b.addEventListener('click',()=>{
+      const id=b.getAttribute('data-eq'); equipped[id]=!equipped[id]; saveShop(); applyPet(); renderShop(); plink();
+    }));
+
+    const avbox=$("shopAvatars"); avbox.innerHTML="";
+    avatarGoods.forEach(a=>{
+      const card=document.createElement("div"); card.className="shop-item";
+      let action;
+      if(ownedAvatar[a.id]){
+        const on=activeAvatar===a.id;
+        action='<button class="shop-btn '+(on?'equipped':'')+'" data-av="'+a.id+'">'+(on?'使用中':'使用')+'</button>';
+      }else if(a.limited){
+        action='<button class="shop-btn" disabled>集滿 '+a.starReq+'★</button>';
+      }else if(coins>=a.price){
+        action='<button class="shop-btn buy" data-avbuy="'+a.id+'">買（'+a.price+'🪙）</button>';
+      }else{
+        action='<button class="shop-btn" disabled>'+a.price+'🪙</button>';
+      }
+      const sw=(a.type==='emoji')?'<div class="av-sw av-emoji">'+a.emoji+'</div>':'<div class="av-sw" style="background:'+a.head+';border-color:'+a.edge+'"></div>';
+      const tag=a.limited?'<span class="ltag">限定</span>':'';
+      card.innerHTML=sw+'<div class="shop-name">'+a.name+tag+'</div>'+action;
+      avbox.appendChild(card);
+    });
+    avbox.querySelectorAll('[data-avbuy]').forEach(b=>b.addEventListener('click',()=>{
+      const id=b.getAttribute('data-avbuy'), a=avatarGoods.find(x=>x.id===id);
+      if(coins>=a.price && !ownedAvatar[id]){ coins-=a.price; ownedAvatar[id]=true; activeAvatar=id; updateCoins(); saveCoins(); saveShop(); applyAvatar(); renderShop(); winSound(); petReact('correct'); }
+    }));
+    avbox.querySelectorAll('[data-av]').forEach(b=>b.addEventListener('click',()=>{
+      const id=b.getAttribute('data-av'); activeAvatar=id; saveShop(); applyAvatar(); renderShop(); plink();
+    }));
+
+    const bgbox=$("shopBgs"); bgbox.innerHTML="";
+    bgGoods.forEach(g=>{
+      const card=document.createElement("div"); card.className="shop-item";
+      let action;
+      if(ownedBg[g.id]){
+        const on=activeBg===g.id;
+        action='<button class="shop-btn '+(on?'equipped':'')+'" data-bg="'+g.id+'">'+(on?'使用中':'使用')+'</button>';
+      }else if(coins>=g.price){
+        action='<button class="shop-btn buy" data-bgbuy="'+g.id+'">買（'+g.price+'🪙）</button>';
+      }else{
+        action='<button class="shop-btn" disabled>'+g.price+'🪙</button>';
+      }
+      card.innerHTML='<div class="bg-sw" style="background:linear-gradient(135deg,'+g.c1+','+g.c2+')"></div><div class="shop-name">'+g.name+'</div>'+action;
+      bgbox.appendChild(card);
+    });
+    bgbox.querySelectorAll('[data-bgbuy]').forEach(b=>b.addEventListener('click',()=>{
+      const id=b.getAttribute('data-bgbuy'), g=bgGoods.find(x=>x.id===id);
+      if(coins>=g.price && !ownedBg[id]){ coins-=g.price; ownedBg[id]=true; activeBg=id; updateCoins(); saveCoins(); saveShop(); applyBg(); renderShop(); winSound(); }
+    }));
+    bgbox.querySelectorAll('[data-bg]').forEach(b=>b.addEventListener('click',()=>{
+      const id=b.getAttribute('data-bg'); activeBg=id; saveShop(); applyBg(); renderShop(); plink();
+    }));
+  }
+
+  function celebrate(){ winSound(); heartRain(); confetti(); petReact('correct'); addCoin(); }
+  function wrongFx(btn,fb){
+    btn.classList.add('wobble'); setTimeout(()=>btn.classList.remove('wobble'),420);
+    fb.textContent="再數數看喔，慢慢來～"; fb.className="feedback try";
+    tone(330,0.2,0,"sine",0.08); petReact('wrong');
+  }
+
+  /* 共用：產生答案按鈕（正解 + 鄰近干擾項） */
+  const lastSig={};
+  function buildOptions(correct){
+    const opts=new Set([correct]);
+    const spread = correct>=20 ? [2,5,10,20] : (correct>=10 ? [2,3,5,10] : [2,3,4]);
+    const any = correct>=20 ? [1,2,3,5,10,20] : [1,2,3,5];
+    function addOff(pool){ let g=0; while(g++<40){ const off=pool[Math.floor(Math.random()*pool.length)]; const cand=correct+(Math.random()<0.5?-off:off); if(cand>0 && !opts.has(cand)){ opts.add(cand); return; } } }
+    addOff(spread); addOff(any);
+    let n=1; while(opts.size<3){ if(n>0 && !opts.has(n)) opts.add(n); n++; }
+    return [...opts].sort(()=>Math.random()-0.5);
+  }
+  let autoT=null;
+  function autoNext(){ clearTimeout(autoT); autoT=setTimeout(()=>{ const n=$("next"); if(n && !n.classList.contains("hidden")) n.click(); }, 2000); }
+  function presentAnswers(answersEl, fb, nextBtn, correct, onCorrect){
+    const list=buildOptions(correct);
+    answersEl.innerHTML=""; let solved=false;
+    list.forEach(n=>{
+      const b=document.createElement("button"); b.className="ans"; b.textContent=n;
+      b.addEventListener("click",()=>{
+        if(solved) return;
+        if(n===correct){
+          solved=true; celebrate(); awardStar(); b.classList.add("correct");
+          [...answersEl.children].forEach(c=>c.disabled=true);
+          fb.textContent="太厲害了！訂單完成 🎉"; fb.className="feedback good";
+          onCorrect(); nextBtn.classList.remove("hidden"); autoNext();
+        }else{ wrongFx(b,fb); }
+      });
+      answersEl.appendChild(b);
+    });
+    answersEl.classList.remove("hidden");
+  }
+
+  /* ========== 第二區：合起來（10 以內加法） ========== */
+  const z2Treats=["🍪","🥐","🍩","🥨","🧇","🥯"];
+  let z2Idx=0;
+  function renderZ2(){
+    $("play").innerHTML =
+      '<div class="customer"><div class="face" id="custFace">🐻</div><div class="bubble" id="prompt"></div></div>'+
+      '<div class="combine-stage" id="stage"></div>'+
+      '<button class="btn orange" id="combineBtn">合起來！</button>'+
+      '<div class="equation" id="eq"></div>'+
+      '<div class="answers hidden" id="answers"></div>'+
+      '<div class="feedback" id="feedback"></div>'+
+      '<button class="btn green hidden" id="next">下一題 →</button>';
+    $("next").addEventListener("click",genZ2);
+    genZ2();
+  }
+  function genZ2(){
+    let a,b,sig,g=0; do{ a=rnd(1,5); b=rnd(1,5); sig=a+','+b; g++; }while((a+b>10 || sig===lastSig.z2) && g<40); lastSig.z2=sig;
+    const total=a+b, cookie=z2Treats[z2Idx++ % z2Treats.length];
+    const stage=$("stage"), eq=$("eq"), prompt=$("prompt"),
+          answers=$("answers"), feedback=$("feedback"), next=$("next"), combineBtn=$("combineBtn");
+
+    $("custFace").textContent=faces[rnd(0,faces.length-1)];
+    prompt.textContent="把兩盤合起來，數數看有幾個！";
+    eq.innerHTML=""; answers.classList.add("hidden"); answers.innerHTML="";
+    feedback.textContent=""; feedback.className="feedback"; next.classList.add("hidden");
+    combineBtn.classList.remove("hidden"); combineBtn.disabled=false;
+
+    stage.className="combine-stage"; stage.innerHTML="";
+    const pA=plate("l",a,cookie), plus=document.createElement("div");
+    plus.className="plus-sign"; plus.textContent="+";
+    const pB=plate("r",b,cookie);
+    stage.append(pA,plus,pB);
+
+    combineBtn.onclick=()=>{
+      combineBtn.disabled=true; combineBtn.classList.add("hidden");
+      stage.classList.add("merging");
+      setTimeout(()=>{
+        stage.innerHTML="";
+        const big=document.createElement("div"); big.className="plate big"; stage.appendChild(big);
+        let i=0;
+        (function add(){
+          if(i>=total){
+            petReact('ten');
+            prompt.textContent="數數看，總共有幾個？";
+            eq.innerHTML = a+' <span style="color:var(--cookie-soft)">+</span> '+b+' <span style="color:var(--cookie-soft)">=</span> <span class="q">?</span>';
+            presentAnswers(answers,feedback,next,total,()=>{
+              eq.innerHTML = a+' <span style="color:var(--cookie-soft)">+</span> '+b+' <span style="color:var(--cookie-soft)">=</span> <span style="color:var(--ok)">'+total+'</span>';
+              prompt.textContent="哇，合起來是 "+total+" 個！";
+            });
+            return;
+          }
+          const c=document.createElement("div"); c.className="ck pop"; c.textContent=cookie;
+          big.appendChild(c); plink(); i++;
+          setTimeout(add,230);
+        })();
+      },420);
+    };
+  }
+  function plate(side,n,cookie){
+    const p=document.createElement("div"); p.className="plate "+side;
+    for(let i=0;i<n;i++){ const c=document.createElement("div"); c.className="ck"; c.textContent=cookie; p.appendChild(c); }
+    return p;
+  }
+
+  /* ========== 第四區：湊十魔法（進位加法） ========== */
+  const z4Treats=[["🍪","🧁"],["🥐","🍰"],["🍩","🥧"],["🥨","🧇"],["🍘","🍮"],["🥯","🍡"]];
+  let z4Idx=0, z4;
+  function renderZ4(){
+    $("play").innerHTML =
+      '<div class="customer"><div class="face" id="custFace">🐻</div><div class="bubble" id="prompt"></div></div>'+
+      '<div class="equation" id="eq"></div>'+
+      '<div class="frame-wrap"><div class="frame" id="frame" aria-label="十格板"></div></div>'+
+      '<p class="tray-label" id="trayLabel"></p>'+
+      '<div class="tray" id="tray" role="group" aria-label="待放入的點心"></div>'+
+      '<div class="answers hidden" id="answers"></div>'+
+      '<div class="feedback" id="feedback"></div>'+
+      '<button class="btn green hidden" id="next">下一題 →</button>';
+    $("next").addEventListener("click",genZ4);
+    genZ4();
+  }
+  function genZ4(){
+    let a,b,sum,sig,g=0; do{ a=rnd(5,9); b=rnd(2,9); sum=a+b; sig=a+','+b; g++; }while((sum<=10||sum>20||sig===lastSig.z4) && g<40); lastSig.z4=sig;
+    const need=10-a, remainder=b-need, cookie=z2Treats[z4Idx++ % z2Treats.length];
+    z4={a,b,sum,need,remainder,placed:0,solved:false,batch:cookie,add:cookie};
+
+    const frame=$("frame"), tray=$("tray"), eq=$("eq"), prompt=$("prompt"),
+          answers=$("answers"), feedback=$("feedback"), next=$("next"), trayLabel=$("trayLabel");
+    $("custFace").textContent=faces[rnd(0,faces.length-1)];
+    prompt.textContent=a+" 加 "+b+"，先把空格湊滿 10 吧！";
+    eq.innerHTML = a+' <span style="color:var(--cookie-soft)">+</span> '+b+' <span style="color:var(--cookie-soft)">=</span> <span class="q">?</span>';
+
+    frame.innerHTML="";
+    for(let i=0;i<10;i++){
+      const c=document.createElement("div"); c.className="cell";
+      if(i<a){ c.appendChild(tk(z4.batch)); }
+      else { c.classList.add("empty"); if(i<a+need) c.classList.add("hint"); }
+      frame.appendChild(c);
+    }
+    tray.innerHTML="";
+    for(let i=0;i<b;i++){
+      const btn=document.createElement("button");
+      btn.className="token"; btn.textContent=z4.add; btn.setAttribute("aria-label","放一個點心進空格");
+      btn.addEventListener("click",()=>placeZ4(btn));
+      tray.appendChild(btn);
+    }
+    trayLabel.textContent="點一下下面的點心，把空格放滿到 10";
+    answers.classList.add("hidden"); answers.innerHTML="";
+    feedback.textContent=""; feedback.className="feedback"; next.classList.add("hidden");
+  }
+  function tk(emoji,extra){ const t=document.createElement("div"); t.className="token"+(extra?" "+extra:""); t.textContent=emoji; return t; }
+  function placeZ4(btn){
+    if(z4.placed>=z4.need) return;
+    const cell=$("frame").querySelector(".cell.empty");
+    cell.classList.remove("empty","hint"); cell.classList.add("added");
+    const t=tk(z4.add); t.classList.add("place-in"); cell.appendChild(t);
+    btn.remove(); z4.placed++; plink(); petReact('place');
+    if(z4.placed===z4.need){
+      tenChime(); petReact('ten');
+      $("prompt").textContent="湊滿 10 了！還剩 "+z4.remainder+" 個。";
+      $("trayLabel").textContent="現在算算看：10 加 "+z4.remainder+" 是多少？";
+      $("eq").innerHTML = '10 <span style="color:var(--cookie-soft)">+</span> '+z4.remainder+' <span style="color:var(--cookie-soft)">=</span> <span class="q">?</span>';
+      presentAnswers($("answers"),$("feedback"),$("next"),z4.sum,()=>{
+        $("eq").innerHTML = z4.a+' <span style="color:var(--cookie-soft)">+</span> '+z4.b+' <span style="color:var(--cookie-soft)">=</span> <span style="color:var(--ok)">'+z4.sum+'</span>';
+        $("prompt").textContent="謝謝你，我最喜歡這家店了！";
+      });
+    }
+  }
+
+  /* ========== 第三區：送出去（10 以內減法） ========== */
+  let z3Idx=0;
+  function renderZ3(){
+    $("play").innerHTML =
+      '<div class="customer"><div class="face" id="custFace">🐻</div><div class="bubble" id="prompt"></div></div>'+
+      '<div class="combine-stage" id="stage"></div>'+
+      '<button class="btn orange" id="sellBtn">賣給牠！</button>'+
+      '<div class="equation" id="eq"></div>'+
+      '<div class="answers hidden" id="answers"></div>'+
+      '<div class="feedback" id="feedback"></div>'+
+      '<button class="btn green hidden" id="next">下一題 →</button>';
+    $("next").addEventListener("click",genZ3);
+    genZ3();
+  }
+  function genZ3(){
+    let minuend,subtra,sig,g=0; do{ minuend=rnd(2,10); subtra=rnd(1,minuend-1); sig=minuend+','+subtra; g++; }while(sig===lastSig.z3 && g<40); lastSig.z3=sig; const remain=minuend-subtra;
+    const cookie=z2Treats[z3Idx++ % z2Treats.length];
+    const stage=$("stage"), eq=$("eq"), prompt=$("prompt"),
+          answers=$("answers"), feedback=$("feedback"), next=$("next"), sellBtn=$("sellBtn");
+    $("custFace").textContent=faces[rnd(0,faces.length-1)];
+    prompt.textContent="客人想買 "+subtra+" 個，賣給牠之後還剩幾個？";
+    eq.innerHTML=""; answers.classList.add("hidden"); answers.innerHTML="";
+    feedback.textContent=""; feedback.className="feedback"; next.classList.add("hidden");
+    sellBtn.classList.remove("hidden"); sellBtn.disabled=false;
+
+    stage.className="combine-stage"; stage.innerHTML="";
+    const plate=document.createElement("div"); plate.className="plate big";
+    for(let i=0;i<minuend;i++){ const c=document.createElement("div"); c.className="ck"; c.textContent=cookie; plate.appendChild(c); }
+    stage.appendChild(plate);
+
+    sellBtn.onclick=()=>{
+      sellBtn.disabled=true; sellBtn.classList.add("hidden");
+      const cks=[...plate.querySelectorAll(".ck")];
+      let k=0;
+      (function take(){
+        if(k>=subtra){
+          petReact('ten');
+          prompt.textContent="數數看，還剩幾個？";
+          eq.innerHTML = minuend+' <span style="color:var(--cookie-soft)">−</span> '+subtra+' <span style="color:var(--cookie-soft)">=</span> <span class="q">?</span>';
+          presentAnswers(answers,feedback,next,remain,()=>{
+            eq.innerHTML = minuend+' <span style="color:var(--cookie-soft)">−</span> '+subtra+' <span style="color:var(--cookie-soft)">=</span> <span style="color:var(--ok)">'+remain+'</span>';
+            prompt.textContent="還剩 "+remain+" 個，謝謝你！";
+          });
+          return;
+        }
+        const c=cks[cks.length-1-k];
+        c.classList.add("taken"); plink();
+        setTimeout(()=>c.remove(),360);
+        k++; setTimeout(take,360);
+      })();
+    };
+  }
+
+  /* ========== 第五區：找回來（退位減法 11–20） ========== */
+  let z5Idx=0, z5;
+  function renderZ5(){
+    $("play").innerHTML =
+      '<div class="customer"><div class="face" id="custFace">🐻</div><div class="bubble" id="prompt"></div></div>'+
+      '<div class="equation" id="eq"></div>'+
+      '<p class="tray-label" id="tenLabel">整盒 10 個</p>'+
+      '<div class="frame-wrap"><div class="frame sealed" id="frame" aria-label="十格板"></div></div>'+
+      '<p class="tray-label" id="onesLabel"></p>'+
+      '<div class="tray" id="tray" role="group" aria-label="外面的點心"></div>'+
+      '<div class="answers hidden" id="answers"></div>'+
+      '<div class="feedback" id="feedback"></div>'+
+      '<button class="btn green hidden" id="next">下一題 →</button>';
+    $("next").addEventListener("click",genZ5);
+    genZ5();
+  }
+  function genZ5(){
+    let minuend,subtra,ones,sig,g=0; do{ minuend=rnd(11,18); ones=minuend%10; subtra=rnd(3,9); sig=minuend+','+subtra; g++; }while((subtra<=ones || subtra>=minuend || sig===lastSig.z5) && g<60); lastSig.z5=sig;
+    const cookie=z2Treats[z5Idx++ % z2Treats.length];
+    z5={minuend,subtra,ones,answer:minuend-subtra,remaining:subtra,onesLeft:ones,opened:false,done:false,ten:cookie,one:cookie};
+
+    const frame=$("frame"), tray=$("tray"), eq=$("eq"), prompt=$("prompt"),
+          answers=$("answers"), feedback=$("feedback"), next=$("next"), onesLabel=$("onesLabel");
+    $("custFace").textContent=faces[rnd(0,faces.length-1)];
+    prompt.textContent="客人想買 "+subtra+" 個，先拿走外面的！";
+    eq.innerHTML = minuend+' <span style="color:var(--cookie-soft)">−</span> '+subtra+' <span style="color:var(--cookie-soft)">=</span> <span class="q">?</span>';
+    onesLabel.textContent="外面有 "+ones+" 個（先拿這些）";
+
+    frame.className="frame sealed"; frame.innerHTML="";
+    for(let i=0;i<10;i++){
+      const c=document.createElement("div"); c.className="cell";
+      const b=document.createElement("button"); b.className="token"; b.textContent=z5.ten;
+      b.setAttribute("aria-label","從整盒拿走一個");
+      b.addEventListener("click",()=>z5TakeTen(b));
+      c.appendChild(b); frame.appendChild(c);
+    }
+    tray.innerHTML="";
+    for(let i=0;i<ones;i++){
+      const b=document.createElement("button"); b.className="token"; b.textContent=z5.one;
+      b.setAttribute("aria-label","拿走外面一個");
+      b.addEventListener("click",()=>z5TakeOne(b));
+      tray.appendChild(b);
+    }
+    answers.classList.add("hidden"); answers.innerHTML="";
+    feedback.textContent=""; feedback.className="feedback"; next.classList.add("hidden");
+  }
+  function z5TakeOne(btn){
+    if(z5.done || btn.disabled) return;
+    btn.disabled=true; btn.classList.add("taken"); plink(); setTimeout(()=>btn.remove(),360);
+    z5.onesLeft--; z5.remaining--;
+    if(z5.onesLeft===0 && z5.remaining>0) z5Open();
+    else $("prompt").textContent="再拿走 "+z5.remaining+" 個";
+  }
+  function z5Open(){
+    z5.opened=true;
+    const f=$("frame"); f.classList.remove("sealed"); f.classList.add("open");
+    tenChime(); petReact('ten');
+    $("onesLabel").textContent="外面不夠了，打開整盒！";
+    $("prompt").textContent="從整盒再拿走 "+z5.remaining+" 個";
+  }
+  function z5TakeTen(btn){
+    if(z5.done || !z5.opened || btn.disabled) return;
+    btn.disabled=true; btn.classList.add("taken"); plink(); setTimeout(()=>btn.remove(),360);
+    z5.remaining--;
+    if(z5.remaining===0) z5Finish();
+    else $("prompt").textContent="從整盒再拿走 "+z5.remaining+" 個";
+  }
+  function z5Finish(){
+    z5.done=true; $("frame").classList.remove("open"); petReact('ten');
+    $("prompt").textContent="數數看，還剩幾個？";
+    presentAnswers($("answers"),$("feedback"),$("next"),z5.answer,()=>{
+      $("eq").innerHTML = z5.minuend+' <span style="color:var(--cookie-soft)">−</span> '+z5.subtra+' <span style="color:var(--cookie-soft)">=</span> <span style="color:var(--ok)">'+z5.answer+'</span>';
+      $("prompt").textContent="還剩 "+z5.answer+" 個，謝謝你！";
+    });
+  }
+
+  /* ========== 第一區：數一數（1–10 數感） ========== */
+  let z1Idx=0, z1;
+  function renderZ1(){
+    $("play").innerHTML =
+      '<div class="customer"><div class="face" id="custFace">🐻</div><div class="bubble" id="prompt"></div></div>'+
+      '<p class="tray-label">點心樹（點一下摘下來）</p>'+
+      '<div class="tree" id="source"></div>'+
+      '<p class="tray-label">籃子（點一下放回去）</p>'+
+      '<div class="frame-wrap"><div class="basket" id="basket" aria-label="籃子"></div></div>'+
+      '<button class="btn orange" id="doneBtn">完成！</button>'+
+      '<div class="feedback" id="feedback"></div>'+
+      '<button class="btn green hidden" id="next">下一題 →</button>';
+    $("next").addEventListener("click",genZ1);
+    $("doneBtn").addEventListener("click",z1Check);
+    genZ1();
+  }
+  function genZ1(){
+    let target,g=0; do{ target=rnd(1,10); g++; }while(target===lastSig.z1 && g<20); lastSig.z1=target; const cookie=z2Treats[z1Idx++ % z2Treats.length];
+    z1={target,cookie,done:false};
+    $("custFace").textContent=faces[rnd(0,faces.length-1)];
+    $("prompt").textContent="把 "+target+" 顆放進籃子吧！";
+    const source=$("source"), basket=$("basket");
+    source.innerHTML=""; basket.innerHTML="";
+    for(let i=0;i<10;i++){ const slot=document.createElement("div"); slot.className="slot"; slot.appendChild(z1Pick(cookie)); source.appendChild(slot); }
+    $("feedback").textContent=""; $("feedback").className="feedback";
+    $("doneBtn").classList.remove("hidden"); $("doneBtn").disabled=false;
+    $("next").classList.add("hidden");
+  }
+  function z1Pick(cookie){
+    const b=document.createElement("button"); b.className="token"; b.textContent=cookie;
+    b.setAttribute("aria-label","摘一顆放進籃子");
+    b.addEventListener("click",()=>{ if(z1.done) return; b.remove(); z1Drop(cookie); plink(); });
+    return b;
+  }
+  function z1Drop(cookie){
+    const b=document.createElement("button"); b.className="token place-in"; b.textContent=cookie;
+    b.setAttribute("aria-label","放回點心樹");
+    b.addEventListener("click",()=>{ if(z1.done) return; b.remove(); z1Return(cookie); plink(); });
+    $("basket").appendChild(b);
+  }
+  function z1Return(cookie){
+    const slots=$("source").querySelectorAll(".slot");
+    for(const s of slots){ if(!s.querySelector(".token")){ s.appendChild(z1Pick(cookie)); return; } }
+  }
+  function z1Check(){
+    if(z1.done) return;
+    const n=$("basket").querySelectorAll(".token").length;
+    if(n===z1.target){
+      z1.done=true; celebrate(); awardStar();
+      $("feedback").textContent="你數出了 "+z1.target+" 顆，太棒了！🎉"; $("feedback").className="feedback good";
+      $("doneBtn").classList.add("hidden"); $("next").classList.remove("hidden"); autoNext();
+      $("prompt").textContent="謝謝你的幫忙！";
+    }else{
+      wrongFx($("doneBtn"),$("feedback"));
+      $("feedback").textContent="籃子裡有 "+n+" 顆，要 "+z1.target+" 顆喔，再數數看～";
+    }
+  }
+
+  /* ========== 第六區：點心大訂單（綜合應用 1–20） ========== */
+  const z6Items=[{n:"杯子蛋糕",e:"🧁"},{n:"餅乾",e:"🍪"},{n:"甜甜圈",e:"🍩"},{n:"馬卡龍",e:"🍡"},{n:"布丁",e:"🍮"}];
+  function renderZ6(){
+    $("play").innerHTML =
+      '<div class="customer"><div class="face" id="custFace">🐻</div><div class="bubble" id="prompt"></div></div>'+
+      '<div class="equation" id="eq"></div>'+
+      '<div class="answers hidden" id="answers"></div>'+
+      '<div class="feedback" id="feedback"></div>'+
+      '<button class="btn green hidden" id="next">下一題 →</button>';
+    $("next").addEventListener("click",genZ6);
+    genZ6();
+  }
+  function genZ6(){
+    const item=z6Items[rnd(0,z6Items.length-1)];
+    let a,b,answer,opSym,isAdd,sig,g=0;
+    do{
+      isAdd=Math.random()<0.5;
+      if(isAdd){ a=rnd(2,12); b=rnd(2,20-a); answer=a+b; opSym="+"; }
+      else{ a=rnd(5,20); b=rnd(1,a-1); answer=a-b; opSym="−"; }
+      sig=opSym+a+','+b; g++;
+    }while(sig===lastSig.z6 && g<40);
+    lastSig.z6=sig;
+    const story = isAdd ? ("我做了 "+a+" 個"+item.e+item.n+"，又做了 "+b+" 個，總共幾個？") : ("我有 "+a+" 個"+item.e+item.n+"，賣出 "+b+" 個，還剩幾個？");
+    $("custFace").textContent=faces[rnd(0,faces.length-1)];
+    $("prompt").textContent=story;
+    const eq=$("eq"), answers=$("answers"), feedback=$("feedback"), next=$("next");
+    eq.innerHTML = a+' <span style="color:var(--cookie-soft)">'+opSym+'</span> '+b+' <span style="color:var(--cookie-soft)">=</span> <span class="q">?</span>';
+    feedback.textContent=""; feedback.className="feedback"; next.classList.add("hidden");
+    presentAnswers(answers,feedback,next,answer,()=>{
+      eq.innerHTML = a+' <span style="color:var(--cookie-soft)">'+opSym+'</span> '+b+' <span style="color:var(--cookie-soft)">=</span> <span style="color:var(--ok)">'+answer+'</span>';
+      $("prompt").textContent="訂單完成，客人好開心！";
+    });
+  }
+
+  /* ========== 第七區：批發大單（二位數加減，100 以內） ========== */
+  function renderZ7(){
+    $("play").innerHTML =
+      '<div class="customer"><div class="face" id="custFace">🐻</div><div class="bubble" id="prompt"></div></div>'+
+      '<div class="equation" id="eq"></div>'+
+      '<div class="answers hidden" id="answers"></div>'+
+      '<div class="feedback" id="feedback"></div>'+
+      '<button class="btn green hidden" id="next">下一題 →</button>';
+    $("next").addEventListener("click",genZ7);
+    genZ7();
+  }
+  function genZ7(){
+    let a,b,answer,opSym,isAdd,sig,g=0;
+    do{
+      isAdd=Math.random()<0.5;
+      if(isAdd){ a=rnd(11,49); b=rnd(11,49); answer=a+b; opSym="+"; }
+      else{ a=rnd(30,99); b=rnd(11,a-1); answer=a-b; opSym="−"; }
+      sig=opSym+a+','+b; g++;
+    }while(sig===lastSig.z7 && g<40);
+    lastSig.z7=sig;
+    $("custFace").textContent=faces[rnd(0,faces.length-1)];
+    $("prompt").textContent="批發大訂單！算算看～";
+    const eq=$("eq"), answers=$("answers"), feedback=$("feedback"), next=$("next");
+    eq.innerHTML = a+' <span style="color:var(--cookie-soft)">'+opSym+'</span> '+b+' <span style="color:var(--cookie-soft)">=</span> <span class="q">?</span>';
+    feedback.textContent=""; feedback.className="feedback"; next.classList.add("hidden");
+    presentAnswers(answers,feedback,next,answer,()=>{
+      eq.innerHTML = a+' <span style="color:var(--cookie-soft)">'+opSym+'</span> '+b+' <span style="color:var(--cookie-soft)">=</span> <span style="color:var(--ok)">'+answer+'</span>';
+      $("prompt").textContent="批發完成，謝謝你！";
+    });
+  }
+
+  /* ========== 第八區：找一找（找缺數，20 以內） ========== */
+  function renderZ8(){
+    $("play").innerHTML =
+      '<div class="customer"><div class="face" id="custFace">🐻</div><div class="bubble" id="prompt"></div></div>'+
+      '<div class="equation" id="eq"></div>'+
+      '<div class="answers hidden" id="answers"></div>'+
+      '<div class="feedback" id="feedback"></div>'+
+      '<button class="btn green hidden" id="next">下一題 →</button>';
+    $("next").addEventListener("click",genZ8);
+    genZ8();
+  }
+  function genZ8(){
+    let a,b,c,form,sig,g=0;
+    do{ a=rnd(2,9); b=rnd(2,9); c=a+b; form=Math.random()<0.5?0:1; sig=form+','+a+','+b; g++; }while(sig===lastSig.z8 && g<40);
+    lastSig.z8=sig;
+    const soft='color:var(--cookie-soft)', ok='color:var(--ok)';
+    let answer, qHtml, solvedHtml;
+    if(form===0){ answer=b;
+      qHtml = a+' <span style="'+soft+'">+</span> <span class="q">?</span> <span style="'+soft+'">=</span> '+c;
+      solvedHtml = a+' <span style="'+soft+'">+</span> <span style="'+ok+'">'+b+'</span> <span style="'+soft+'">=</span> '+c;
+    }else{ answer=a;
+      qHtml = '<span class="q">?</span> <span style="'+soft+'">+</span> '+b+' <span style="'+soft+'">=</span> '+c;
+      solvedHtml = '<span style="'+ok+'">'+a+'</span> <span style="'+soft+'">+</span> '+b+' <span style="'+soft+'">=</span> '+c;
+    }
+    $("custFace").textContent=faces[rnd(0,faces.length-1)];
+    $("prompt").textContent="盒子裡要放幾個，算式才會對呢？";
+    const eq=$("eq"), answers=$("answers"), feedback=$("feedback"), next=$("next");
+    eq.innerHTML=qHtml; feedback.textContent=""; feedback.className="feedback"; next.classList.add("hidden");
+    presentAnswers(answers,feedback,next,answer,()=>{
+      eq.innerHTML=solvedHtml; $("prompt").textContent="答對了，剛剛好！";
+    });
+  }
+
+  /* ========== 第九區：結帳找錢（錢幣） ========== */
+  let z9;
+  function renderZ9(){
+    $("play").innerHTML =
+      '<div class="customer"><div class="face" id="custFace">🐻</div><div class="bubble" id="prompt"></div></div>'+
+      '<p class="tray-label" id="payLabel">付錢盤（點錢幣放入，點盤裡的可拿回）</p>'+
+      '<div class="frame-wrap"><div class="basket" id="payTray" aria-label="付錢盤"></div></div>'+
+      '<div class="coin-row">'+
+        '<button class="coin-chip coin-1" data-v="1" aria-label="1 元">1</button>'+
+        '<button class="coin-chip coin-5" data-v="5" aria-label="5 元">5</button>'+
+        '<button class="coin-chip coin-10" data-v="10" aria-label="10 元">10</button>'+
+      '</div>'+
+      '<button class="btn orange" id="payBtn">付錢！</button>'+
+      '<div class="feedback" id="feedback"></div>'+
+      '<button class="btn green hidden" id="next">下一題 →</button>';
+    $("next").addEventListener("click",genZ9);
+    $("payBtn").addEventListener("click",z9Check);
+    $("play").querySelectorAll('.coin-row [data-v]').forEach(b=>b.addEventListener('click',()=>z9Add(parseInt(b.getAttribute('data-v')))));
+    genZ9();
+  }
+  function genZ9(){
+    let price,g=0; do{ price=rnd(3,39); g++; }while(price===lastSig.z9 && g<20); lastSig.z9=price;
+    z9={price,sum:0,done:false};
+    $("custFace").textContent=faces[rnd(0,faces.length-1)];
+    $("prompt").textContent="客人要付 "+price+" 元，用錢幣湊出來吧！";
+    $("payTray").innerHTML=""; $("feedback").textContent=""; $("feedback").className="feedback";
+    $("payBtn").classList.remove("hidden"); $("payBtn").disabled=false; $("next").classList.add("hidden");
+  }
+  function z9Add(v){
+    if(z9.done) return;
+    const c=document.createElement("button"); c.className="coin-chip coin-"+v+" place-in"; c.textContent=v;
+    c.addEventListener("click",()=>{ if(z9.done) return; z9.sum-=v; c.remove(); plink(); });
+    $("payTray").appendChild(c); z9.sum+=v; plink();
+  }
+  function z9Check(){
+    if(z9.done) return;
+    if(z9.sum===z9.price){
+      z9.done=true; celebrate(); awardStar();
+      $("feedback").textContent="剛剛好 "+z9.price+" 元，謝謝惠顧！🎉"; $("feedback").className="feedback good";
+      $("payBtn").classList.add("hidden"); $("next").classList.remove("hidden"); autoNext();
+      $("prompt").textContent="算對了，真會做生意！";
+    }else{
+      wrongFx($("payBtn"),$("feedback"));
+      $("feedback").textContent="現在是 "+z9.sum+" 元，要湊到 "+z9.price+" 元喔～";
+    }
+  }
+
+  /* ========== 第十區：分組點心（乘法入門） ========== */
+  function renderZ10(){
+    $("play").innerHTML =
+      '<div class="customer"><div class="face" id="custFace">🐻</div><div class="bubble" id="prompt"></div></div>'+
+      '<div class="combine-stage" id="stage"></div>'+
+      '<div class="equation" id="eq"></div>'+
+      '<div class="answers hidden" id="answers"></div>'+
+      '<div class="feedback" id="feedback"></div>'+
+      '<button class="btn green hidden" id="next">下一題 →</button>';
+    $("next").addEventListener("click",genZ10); genZ10();
+  }
+  function genZ10(){
+    let a,b,sig,g=0; do{ a=rnd(2,5); b=rnd(2,5); sig=a+'x'+b; g++; }while(sig===lastSig.z10 && g<30); lastSig.z10=sig;
+    const total=a*b, cookie=z2Treats[rnd(0,z2Treats.length-1)];
+    $("custFace").textContent=faces[rnd(0,faces.length-1)];
+    $("prompt").textContent="每盤 "+b+" 個，有 "+a+" 盤，總共幾個？";
+    const stage=$("stage"); stage.className="combine-stage"; stage.innerHTML="";
+    for(let i=0;i<a;i++){ const p=document.createElement("div"); p.className="plate"; for(let j=0;j<b;j++){ const c=document.createElement("div"); c.className="ck"; c.textContent=cookie; p.appendChild(c);} stage.appendChild(p); }
+    const eq=$("eq"), answers=$("answers"), feedback=$("feedback"), next=$("next");
+    eq.innerHTML = a+' <span style="color:var(--cookie-soft)">×</span> '+b+' <span style="color:var(--cookie-soft)">=</span> <span class="q">?</span>';
+    feedback.textContent=""; feedback.className="feedback"; next.classList.add("hidden");
+    presentAnswers(answers,feedback,next,total,()=>{
+      eq.innerHTML = a+' <span style="color:var(--cookie-soft)">×</span> '+b+' <span style="color:var(--cookie-soft)">=</span> <span style="color:var(--ok)">'+total+'</span>';
+      $("prompt").textContent="數對了，總共 "+total+" 個！";
+    });
+  }
+
+  /* ========== 第十一區：幾十幾一（位值） ========== */
+  function renderZ11(){
+    $("play").innerHTML =
+      '<div class="customer"><div class="face" id="custFace">🐻</div><div class="bubble" id="prompt"></div></div>'+
+      '<div class="pv-stage" id="stage"></div>'+
+      '<div class="equation" id="eq"></div>'+
+      '<div class="answers hidden" id="answers"></div>'+
+      '<div class="feedback" id="feedback"></div>'+
+      '<button class="btn green hidden" id="next">下一題 →</button>';
+    $("next").addEventListener("click",genZ11); genZ11();
+  }
+  function genZ11(){
+    let t,o,sig,g=0; do{ t=rnd(1,5); o=rnd(0,9); sig=t+','+o; g++; }while(sig===lastSig.z11 && g<30); lastSig.z11=sig;
+    const total=t*10+o;
+    $("custFace").textContent=faces[rnd(0,faces.length-1)];
+    $("prompt").textContent=t+" 個十，"+o+" 個一，合起來是多少？";
+    const stage=$("stage"); stage.innerHTML="";
+    for(let i=0;i<t;i++){ const d=document.createElement("div"); d.className="tenblock"; d.textContent="10"; stage.appendChild(d); }
+    for(let i=0;i<o;i++){ const u=document.createElement("div"); u.className="oneunit"; stage.appendChild(u); }
+    const eq=$("eq"), answers=$("answers"), feedback=$("feedback"), next=$("next");
+    eq.innerHTML='<span class="q">?</span>'; feedback.textContent=""; feedback.className="feedback"; next.classList.add("hidden");
+    presentAnswers(answers,feedback,next,total,()=>{
+      eq.innerHTML='<span style="color:var(--ok)">'+total+'</span>'; $("prompt").textContent="答對了，是 "+total+"！";
+    });
+  }
+
+  /* ========== 找零關卡（錢幣玩法：湊出找零） ========== */
+  let z12s;
+  function renderZ12(){
+    $("play").innerHTML =
+      '<div class="customer"><div class="face" id="custFace">🐻</div><div class="bubble" id="prompt"></div></div>'+
+      '<p class="tray-label">找零盤（點錢幣放入，點盤裡的可拿回）</p>'+
+      '<div class="frame-wrap"><div class="basket" id="payTray2" aria-label="找零盤"></div></div>'+
+      '<div class="coin-row">'+
+        '<button class="coin-chip coin-1" data-v="1" aria-label="1 元">1</button>'+
+        '<button class="coin-chip coin-5" data-v="5" aria-label="5 元">5</button>'+
+        '<button class="coin-chip coin-10" data-v="10" aria-label="10 元">10</button>'+
+      '</div>'+
+      '<button class="btn orange" id="payBtn2">找錢！</button>'+
+      '<div class="feedback" id="feedback"></div>'+
+      '<button class="btn green hidden" id="next">下一題 →</button>';
+    $("next").addEventListener("click",genZ12);
+    $("payBtn2").addEventListener("click",z12Check);
+    $("play").querySelectorAll('.coin-row [data-v]').forEach(b=>b.addEventListener('click',()=>z12Add(parseInt(b.getAttribute('data-v')))));
+    genZ12();
+  }
+  function genZ12(){
+    const ms=[10,20,50]; let m,p,sig,g=0;
+    do{ m=ms[rnd(0,ms.length-1)]; p=rnd(1,m-1); sig=m+','+p; g++; }while(sig===lastSig.z12 && g<40);
+    lastSig.z12=sig;
+    z12s={change:m-p,sum:0,done:false};
+    $("custFace").textContent=faces[rnd(0,faces.length-1)];
+    $("prompt").textContent="客人買 "+p+" 元，付了 "+m+" 元，用錢幣找 "+(m-p)+" 元給他！";
+    $("payTray2").innerHTML=""; $("feedback").textContent=""; $("feedback").className="feedback";
+    $("payBtn2").classList.remove("hidden"); $("payBtn2").disabled=false; $("next").classList.add("hidden");
+  }
+  function z12Add(v){
+    if(z12s.done) return;
+    const c=document.createElement("button"); c.className="coin-chip coin-"+v+" place-in"; c.textContent=v;
+    c.addEventListener("click",()=>{ if(z12s.done) return; z12s.sum-=v; c.remove(); plink(); });
+    $("payTray2").appendChild(c); z12s.sum+=v; plink();
+  }
+  function z12Check(){
+    if(z12s.done) return;
+    if(z12s.sum===z12s.change){
+      z12s.done=true; celebrate(); awardStar();
+      $("feedback").textContent="找對了 "+z12s.change+" 元，謝謝光臨！🎉"; $("feedback").className="feedback good";
+      $("payBtn2").classList.add("hidden"); $("next").classList.remove("hidden"); autoNext();
+      $("prompt").textContent="找零正確，真厲害！";
+    }else{
+      wrongFx($("payBtn2"),$("feedback"));
+      $("feedback").textContent="現在湊了 "+z12s.sum+" 元，要找 "+z12s.change+" 元喔～";
+    }
+  }
+
+  /* ========== 關卡地圖與導覽 ========== */
+  const zones=[
+    {id:'z1',icon:'🔢',name:'數一數',sub:'1–10 · 數感',play:renderZ1},
+    {id:'z2',icon:'🍪',name:'合起來',sub:'10 以內加法',play:renderZ2},
+    {id:'z3',icon:'🛍️',name:'送出去',sub:'10 以內減法',play:renderZ3},
+    {id:'z4',icon:'✨',name:'湊十魔法',sub:'進位加法',play:renderZ4},
+    {id:'z11',icon:'🔟',name:'幾十幾一',sub:'位值',play:renderZ11},
+    {id:'z5',icon:'🔁',name:'找回來',sub:'退位減法',play:renderZ5},
+    {id:'z8',icon:'🔎',name:'找一找',sub:'找缺數',play:renderZ8},
+    {id:'z9',icon:'💰',name:'結帳付錢',sub:'付錢',play:renderZ9},
+    {id:'z12',icon:'💵',name:'結帳找錢',sub:'找零',play:renderZ12},
+    {id:'z6',icon:'📋',name:'點心大訂單',sub:'綜合應用',play:renderZ6},
+    {id:'z7',icon:'🧮',name:'批發大單',sub:'二位數加減',play:renderZ7},
+    {id:'z10',icon:'✖️',name:'分組點心',sub:'乘法入門',play:renderZ10},
+  ];
+  /* ---------- 暱稱 + 星星進度（本機儲存，失敗則僅此次有效） ---------- */
+  let nickname="", progress={}, currentZone=null;
+  async function loadState(){
+    if(!store) return;
+    try{ const r=await store.get('nickname'); if(r&&r.value) nickname=r.value; }catch(e){}
+    try{ const r=await store.get('correctCounts'); if(r&&r.value) progress=JSON.parse(r.value); }catch(e){}
+    try{ const r=await store.get('coins'); if(r&&r.value) coins=parseInt(r.value)||0; }catch(e){}
+    try{ const r=await store.get('shop'); if(r&&r.value){ const s=JSON.parse(r.value); owned=s.owned||{}; equipped=s.equipped||{}; ownedBg=s.ownedBg||{bg_default:true}; activeBg=s.activeBg||'bg_default'; ownedAvatar=s.ownedAvatar||{av_default:true}; activeAvatar=s.activeAvatar||'av_default'; } }catch(e){}
+    try{ const r=await store.get('unlocked'); if(r&&r.value){ unlocked=JSON.parse(r.value); } }catch(e){}
+    try{ const r=await store.get('musicOn'); if(r&&r.value!=null) musicOn=(r.value!=='0'); }catch(e){}
+    unlocked.z1=true; unlocked.z2=true; unlocked.z3=true; unlocked.z4=true;
+  }
+  function saveNick(){ try{ if(store) store.set('nickname',nickname); }catch(e){} }
+  function saveProgress(){ try{ if(store) store.set('correctCounts',JSON.stringify(progress)); }catch(e){} }
+
+  function showScreen(s){
+    $("screen-intro").classList.toggle("hidden", s!=="intro");
+    $("screen-name").classList.toggle("hidden", s!=="name");
+    $("screen-map").classList.toggle("hidden", s!=="map");
+    $("screen-shop").classList.toggle("hidden", s!=="shop");
+    $("screen-game").classList.toggle("hidden", s!=="game");
+    $("pet").style.display = (s==='game') ? '' : 'none';
+  }
+  function updateGreet(){
+    $("greet").textContent = nickname ? ("嗨，"+nickname+"！") : "店長小麻吉的數學小舖";
+    $("mapIntro").textContent = nickname ? (nickname+"，選一關開始玩吧！") : "選一關開始玩吧！";
+  }
+  function submitName(){
+    const v=$("nameInput").value.trim().slice(0,8);
+    nickname = v || "小寶貝"; saveNick(); updateGreet(); renderMap(); showScreen('map');
+  }
+  $("introGo").addEventListener("click",()=>{ startMusic(); showScreen(nickname?'map':'name'); });
+  $("nameGo").addEventListener("click",submitName);
+  $("nameInput").addEventListener("keydown",e=>{ if(e.key==='Enter'){ e.preventDefault(); submitName(); }});
+  $("greet").addEventListener("click",()=>{ $("nameInput").value=nickname; showScreen('name'); setTimeout(()=>$("nameInput").focus(),60); });
+
+  function awardStar(){
+    if(!currentZone) return;
+    const c=progress[currentZone]||0;
+    if(c<50){ progress[currentZone]=c+1; saveProgress(); }
+    checkRewards();
+  }
+  function totalStars(){ let t=0; zones.forEach(z=>{ t+=Math.min(10,Math.floor((progress[z.id]||0)/5)); }); return t; }
+  function zoneStars(id){ return Math.min(10,Math.floor((progress[id]||0)/5)); }
+  function checkRewards(){
+    let won=false;
+    avatarGoods.forEach(a=>{ if(a.limited && !ownedAvatar[a.id] && totalStars()>=a.starReq){ ownedAvatar[a.id]=true; won=true; } });
+    shopGoods.forEach(g=>{ if(g.exclusive && !owned[g.id] && zoneStars(g.zone)>=10){ owned[g.id]=true; won=true; } });
+    if(won){ saveShop(); heartRain(); confetti(); winSound(); }
+  }
+
+  /* ---------- 關卡地圖 ---------- */
+  function renderMap(){
+    const box=$("zones"); box.innerHTML="";
+    zones.forEach((z,idx)=>{
+      const cost = idx<=3 ? 0 : (idx-3)*5, open=(idx<=3)||unlocked[z.id];
+      const icon='<div class="z-icon">'+z.icon+'</div><div class="z-name">'+z.name+'</div><div class="z-sub">'+z.sub+'</div>';
+      let el;
+      if(open){
+        const cnt=progress[z.id]||0, got=Math.min(10,Math.floor(cnt/5));
+        let s=""; for(let i=0;i<10;i++) s+='<span class="star'+(i<got?' on':'')+'">★</span>';
+        const stars='<div class="stars" aria-label="'+got+' 顆星">'+s+'</div><div class="z-count">答對 '+cnt+' 題</div>';
+        el=document.createElement("button"); el.className="zone";
+        el.innerHTML='<span class="badge">可以玩</span>'+icon+stars;
+        el.addEventListener("click",()=>openZone(z));
+      }else if(coins>=cost){
+        el=document.createElement("button"); el.className="zone unlock-ready";
+        el.innerHTML='<span class="soon">可開通</span>'+icon+'<div class="z-count">用 '+cost+'🪙 開通</div>';
+        el.addEventListener("click",()=>unlockZone(z,cost));
+      }else{
+        el=document.createElement("div"); el.className="zone locked";
+        el.innerHTML='<span class="soon">'+cost+'🪙</span><span class="lock">🔒</span>'+icon;
+      }
+      box.appendChild(el);
+    });
+  }
+  function unlockZone(z,cost){
+    if(unlocked[z.id] || coins<cost) return;
+    coins-=cost; unlocked[z.id]=true; updateCoins(); saveCoins(); saveUnlocked();
+    renderMap(); winSound(); petReact('correct');
+  }
+  function openZone(z){ currentZone=z.id; showScreen('game'); z.play(); }
+  $("backBtn").addEventListener("click",()=>{ renderMap(); showScreen('map'); });
+  $("shopOpen").addEventListener("click",()=>{ renderShop(); showScreen('shop'); });
+  $("shopBack").addEventListener("click",()=>{ showScreen('map'); });
+
+  (async function init(){
+    await loadState();
+    ensureAccessories();
+    updateGreet(); updateCoins(); applyAvatar(); applyPet(); applyBg();
+    $("musicBtn").textContent = musicOn ? '🎵' : '🔕';
+    renderMap();
+    showScreen('intro');
+  })();
+})();
+</script>
+</body>
+</html>
